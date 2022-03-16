@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-//#include <OpenCL/opencl.h>
+// #include <OpenCL/opencl.h>
 //#else
 #include <CL/cl.h>
 //#endif
