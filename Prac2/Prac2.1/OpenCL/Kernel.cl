@@ -11,9 +11,14 @@ __kernel void HelloWorld(__global int* argument1, __global int* argument2, __glo
 	
 	//short calculation: work Item Number x argument 1 + argument 2
 	//TODO: perform the required calculation
-	printf("Hello World\n");
-
+	//printf("Hello World\n");
+	output = workItemNum*arg1 + arg2;
+	
+	//printf("%d", output);
+	
 	//TODO: print the work item, work group and arguments
+	printf("Hi from work item: %d \t work group: %d \t Arg1: %d \t Arg2: %d \t Output: %d \n", workItemNum, workGroupNum, arg1, arg2, output);
+	
 	/*
 	Expected Output:
 	Hi from work item: 0 	 work group:0 	 Arg1: 10 	 Arg2: 20 	 Output: 20 
@@ -40,7 +45,22 @@ __kernel void HelloWorld(__global int* argument1, __global int* argument2, __glo
 	
 	//adding the outputs for each group---------------------------------------------
 	int groupValue = 0;
+	
 	//TODO: Add all the work items in each work group and output the work groups total 
+	if (localGroupID == 0)
+	{
+		int size = get_local_size(0);
+		// printf("%d \n", groupValue);		
+		
+		for (int i = 0; i < size; i++)
+		{
+			groupValue += (workItemNum+i)*arg1 + arg2;
+		}
+		// printf("%d", localGroupID);
+		printf("groupValue: %d \t Work item: %d \t Work group: %d \n", groupValue, global_addr, workGroupNum);
+		
+	}
+
 	//Expected output:
 	//groupValue: 300 	 Work item:4 	 Work group: 1 
 	//groupValue: 620 	 Work item:12 	 Work group: 3 
