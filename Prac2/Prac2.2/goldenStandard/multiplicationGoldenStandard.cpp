@@ -82,12 +82,14 @@ int main(void){
 	int output[countA];
 	
 	//TODO: code your golden standard matrix multiplication here
-	float start = clock();
+	clock_t start, end;
+
+	start = clock();
 	for (int i = 0; i<countA; i++)
 	{
 		output[i] = matrixA[i] * matrixB[i];
 	}
-	float end = clock();
+	end = clock();
 	printf("Run Time: %0.8f sec \n", ((float) end - start)/CLOCKS_PER_SEC);
 	
 	
