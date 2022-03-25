@@ -3,10 +3,9 @@
 
 #include<stdio.h>
 #include<iostream>
+#include <cstdlib>
 
 using namespace std;
-
-
 
 //creates a square matrix of dimensions Size X Size, with the values being the column number
 void createKnownSquareMatrix(int Size, int* squareMatrix, bool displayMatrices){
@@ -32,11 +31,13 @@ void createKnownSquareMatrix(int Size, int* squareMatrix, bool displayMatrices){
 //creates a random square matrix of dimensions Size X Size, with values ranging from 1-100
 void createRandomSquareMatrix(int Size, int* squareMatrix, bool displayMatrices){
 
-	
+	srand(time(0));
 	for(int i = 0; i<Size; i++){
 		
 		for(int j = 0; j<Size; j++){
-			squareMatrix[i*Size+j] = rand() % 100 + 1;
+			squareMatrix[i*Size+j] = rand() % 100 + 1; //srand(time(0)) used in place of rand() to generate
+								   //different value each time the program is run.
+								   //time(0) as the seed int is std practice.
 			if(displayMatrices){
 				cout<<squareMatrix[i*Size+j]<<"\t ";
 			}
@@ -71,7 +72,7 @@ int main(void){
 	
 	int countB = Size*Size;
 	int matrixB[countB];
-	createKnownSquareMatrix(Size, matrixB, displayMatrices);
+	createRandomSquareMatrix(Size, matrixB, displayMatrices);
 	cout<<"Number of elements in matrix 2: "<<countB<<"\n";
 	cout<<"Dimensions of matrix 2: "<<Size<<"x"<<Size<<"\n";
 	cout<<"Matrix 2 pointer: "<<matrixB<<"\n";
@@ -81,8 +82,14 @@ int main(void){
 	int output[countA];
 	
 	//TODO: code your golden standard matrix multiplication here
-		
-		
+	float start = clock();
+	for (int i = 0; i<countA; i++)
+	{
+		output[i] = matrixA[i] * matrixB[i];
+	}
+	float end = clock();
+	printf("Run Time: %0.8f sec \n", ((float) end - start)/CLOCKS_PER_SEC);
+	
 	
 	
 	
