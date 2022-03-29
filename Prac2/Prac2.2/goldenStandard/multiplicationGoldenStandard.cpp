@@ -85,10 +85,29 @@ int main(void){
 	clock_t start, end;
 
 	start = clock();
-	for (int i = 0; i<countA; i++)
+	int sum; //Variable to store the sums of Rows*Cols of matrixA and matrixB respectively
+	int count = 0; //Counter to track iterations through output matrix for accurate assignment of output matrix elements
+	int count2 = 0; //Counter to track iterations through matrixA - goes from 0 to matrix_size then resets to 0
+	int a = 0; //Special counter to track iteration through Column elements of matrixB
+	while(count < countA)
 	{
-		output[i] = matrixA[i] * matrixB[i];
+		sum = 0;
+		for(int k = 0; k<Size; k++)
+		{
+			sum += matrixA[count2]*matrixB[(count-Size*a)+k*Size];  //Sum for each element of output matrix
+			count2 += 1;						//Formula for matrixB tricky due to matrices populated in 1D arrays instead of 2D
+		}
+
+		output[count] = sum;
+		count += 1;
+		if (count%Size == 0){
+			a += 1;
+		}
+		if (count2 == 9){
+			count2 = 0;
+		}
 	}
+
 	end = clock();
 	printf("Run Time: %0.8f sec \n", ((float) end - start)/CLOCKS_PER_SEC);
 	
