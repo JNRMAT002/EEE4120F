@@ -8,7 +8,6 @@ __kernel void matrixMultiplication(__global int* matrixA, __global int* matrixB,
 	
 	int workItemNum = get_global_id(0);
 	int workGroupNum = get_group_id(0);
-	//localGroupID = get_local_id(0);
 	int size = get_local_size(0);
 
 	//memory buffers
@@ -24,10 +23,6 @@ __kernel void matrixMultiplication(__global int* matrixA, __global int* matrixB,
 	}
 
 	output[workGroupNum*size + workItemNum%size] = sum;
-	
-	//print("Kernel print output test \n");
-
-	//barrier(CLK_LOCAL_MEM_FENCE);
 }
 
 
