@@ -277,7 +277,7 @@ int main(void)
 	//					const cl_event *event_wait_list, 
 	//					cl_event *event)
 	
-	
+	start = clock();
 	
 	cl_int err4 = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, &local_size, 0, NULL, NULL); 
 
@@ -291,7 +291,7 @@ int main(void)
 	
 	//This command stops the program here until everything in the queue has been run
 	clFinish(queue);
-	
+	end = clock();
 	
 	// ***Step 13*** Check that the host was able to retrieve the output data from the output buffer
 	
@@ -305,7 +305,8 @@ int main(void)
 		}
 	}
 	
-	
+	printf ("Run Time: %0.8f sec \n",((float) end - start)/CLOCKS_PER_SEC);
+
 	//------------------------------------------------------------------------
 
 	// ***Step 14*** Deallocate resources	
