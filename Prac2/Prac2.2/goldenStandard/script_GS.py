@@ -11,7 +11,7 @@ def main (argv):
     try:
         opts, args = getopt.getopt(argv, "hi:", ["help", "ifile="])
     except getopt.GetoptError as err:
-        # print help information and exit
+        # print help information and exit   
         sys.exit(2)
     for o, a in opts:
         if o in ("-i", "--ifile"):
@@ -23,7 +23,7 @@ def main (argv):
 
 def run(cppFile, exeFile):
     os.system("echo Compiling " + cppFile)
-    if os.system("gcc " + " -o " + exeFile  + " " + cppFile + " -lOpenCL " + " -lstdc++") == 0:
+    if os.system("gcc " + " -o " + exeFile  + " " + cppFile + " -lstdc++") == 0:
         os.system("echo Running " + exeFile)
         os.system("echo -------------------")
         os.system("./" + exeFile)
