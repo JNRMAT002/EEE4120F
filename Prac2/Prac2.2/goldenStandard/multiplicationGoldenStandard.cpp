@@ -61,6 +61,7 @@ int main(void){
 	//New code for prac 2.2
 	bool displayMatrices = true;
 	int Size = 5;
+	string Size_string = to_string(Size);
 	int countA = Size*Size;
 	int matrixA[countA];
 	createKnownSquareMatrix(Size,matrixA, displayMatrices);
@@ -110,13 +111,14 @@ int main(void){
 	}
 
 	end = clock();
-	printf("Run Time: %0.8f sec \n", ((float) end - start)/CLOCKS_PER_SEC);
-	
-	string filename("GSOutput.txt");
+	float duration;
+	duration = ((float) end - start)/CLOCKS_PER_SEC;
+
+	string filename("GSOutput" + Size_string + "x" + Size_string +".txt");
 	ofstream myfile;
 
 	myfile.open(filename, std::ios_base::app);
-	
+
 	//This if statement will display the matrix in output	
 	if(displayMatrices){
 		printf("\nOutput in the output_buffer \n");
@@ -131,6 +133,8 @@ int main(void){
 		}
 	}
 
+	printf("Run Time: %0.8f sec \n", duration);
+	myfile << "Run Time: " << duration << "sec \n";
 	myfile.close();
 	return 0;
 }

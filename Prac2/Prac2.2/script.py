@@ -17,7 +17,7 @@ def main (argv):
         if o in ("-i", "--ifile"):
             cppFile = a + '.cpp'
             exeFile = a
-            os.system("rm kernelOutput.txt")
+            os.system("rm ./*.txt")
             for i in range (10):
                 run(cppFile, exeFile)
                 time.sleep(1.1)

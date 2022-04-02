@@ -54,12 +54,13 @@ void createRandomSquareMatrix(int Size, int* squareMatrix, bool displayMatrices)
 int main(void)
 {
 
-	clock_t start, end;  //Timers
-
+	clock_t start, end;  //Overhead timers
+	cl_ulong time_start, time_end; //Kernel timers
 
 	//New code for prac 2.2
 	bool displayMatrices = true;
-	int Size = 5;
+	int Size = 20;
+	string Size_string = to_string(Size);
 	int countA = Size*Size;
 	int matrixA[countA];
 	createKnownSquareMatrix(Size,matrixA,displayMatrices);
@@ -82,8 +83,8 @@ int main(void)
 	//cl_kernel kernel; step 7
 	//cl_command_queue queue; step 8
 	
-	//------------------------------------------------------------------------
-	 
+	// START OF OVERHEAD ------------------------------------------------------------------------
+	 start = clock();
 	 
 	//Initialize Buffers, memory space the allows for communication between the host and the target device
 	//TODO: initialize matrixA_buffer, matrixB_buffer and output_buffer
@@ -215,8 +216,10 @@ int main(void)
 	//						cl_device_id device, 
 	//						cl_command_queue_properties properties,
 	//						cl_int *errcode_ret)
-	
-	cl_command_queue queue = clCreateCommandQueueWithProperties(context, device, 0, NULL);
+
+	cl_command_queue queue;
+	//cl_int prop = clSetCommandQueueProperty(queue, CL_QUEUE_PROFILING_ENABLE, CL_TRUE, NULL);
+	queue = clCreateCommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE, NULL);
 
 	//------------------------------------------------------------------------
 
@@ -280,9 +283,9 @@ int main(void)
 	//					cl_event *event)
 	
 	//start = clock();
-	
-	cl_int err4 = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, &local_size, 0, NULL, NULL); 
 
+	cl_event event;
+	cl_int err4 = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, &local_size, 0, NULL, &event);
 	printf("\nKernel check: %i \n",err4);
 
 	//------------------------------------------------------------------------
@@ -290,14 +293,25 @@ int main(void)
 	// ***Step 12*** Allows the host to read from the buffer object 
 	err = clEnqueueReadBuffer(queue, output_buffer, CL_TRUE, 0, sizeof(output), output, 0, NULL, NULL);
 	
-	
+	clWaitForEvents(1, &event);
 	//This command stops the program here until everything in the queue has been run
+
 	clFinish(queue);
-	//end = clock();
-	
+
+	// END OF OVERHEAD ----------------------------------------------------------------------------------------------------
+	end = clock();
+	float overheadTime = ((float) end - start)/CLOCKS_PER_SEC;
 	// ***Step 13*** Check that the host was able to retrieve the output data from the output buffer
 
-	string filename("kernelOutput.txt");
+	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
+	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
+
+	float duration_ns = time_end - time_start;
+	float duration = duration_ns/1000000000;
+
+	overheadTime = overheadTime - duration;
+
+	string filename("kernelOutput_" +  Size_string + "x" + Size_string + ".txt");
 	ofstream myfile;
 	myfile.open(filename, std::ios_base::app);
 
@@ -314,7 +328,9 @@ int main(void)
 		}
 	}
 	
-	//printf ("Run Time: %0.8f sec \n",((float) end - start)/CLOCKS_PER_SEC);
+	printf ("Run Time: %0.8f sec \n", duration);
+	myfile << "Run Time: " << duration << " sec \n";
+	myfile << "Overhead Time: " << overheadTime << " sec \n";
 
 	//------------------------------------------------------------------------
 
