@@ -3,6 +3,7 @@
 
 #include<stdio.h>
 #include<iostream>
+#include<fstream>
 #include <cstdlib>
 
 using namespace std;
@@ -59,7 +60,7 @@ int main(void){
 
 	//New code for prac 2.2
 	bool displayMatrices = true;
-	int Size = 10;
+	int Size = 5;
 	int countA = Size*Size;
 	int matrixA[countA];
 	createKnownSquareMatrix(Size,matrixA, displayMatrices);
@@ -111,19 +112,25 @@ int main(void){
 	end = clock();
 	printf("Run Time: %0.8f sec \n", ((float) end - start)/CLOCKS_PER_SEC);
 	
-	
-	
+	string filename("GSOutput.txt");
+	ofstream myfile;
+
+	myfile.open(filename, std::ios_base::app);
 	
 	//This if statement will display the matrix in output	
 	if(displayMatrices){
 		printf("\nOutput in the output_buffer \n");
+		myfile << "\nOutput in the output_buffer \n";
 		for(int j=0; j<countA; j++) {
 			printf("%i \t " ,output[j]);
+			myfile << output[j] << " \t";
 			if(j%Size == (Size-1)){
 				printf("\n");
+				myfile << "\n";
 			}
 		}
 	}
-	
+
+	myfile.close();
 	return 0;
 }

@@ -2,7 +2,7 @@
 # To execute script, run command: python script.py -i <filename>
 # Help writing script from "tutorialspoint.com/Python"
 
-import sys, os, getopt
+import sys, os, getopt, time
 
 def main (argv):
     cppFile = ""
@@ -17,7 +17,10 @@ def main (argv):
         if o in ("-i", "--ifile"):
             cppFile = a + '.cpp'
             exeFile = a
-            run(cppFile, exeFile)
+            os.system("rm kernelOutput.txt")
+            for i in range (10):
+                run(cppFile, exeFile)
+                time.sleep(1.1)
         else:
             sys.exit()
 

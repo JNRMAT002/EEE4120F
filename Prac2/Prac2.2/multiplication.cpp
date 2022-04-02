@@ -59,7 +59,7 @@ int main(void)
 
 	//New code for prac 2.2
 	bool displayMatrices = true;
-	int Size = 7;
+	int Size = 5;
 	int countA = Size*Size;
 	int matrixA[countA];
 	createKnownSquareMatrix(Size,matrixA,displayMatrices);
@@ -277,7 +277,7 @@ int main(void)
 	//					const cl_event *event_wait_list, 
 	//					cl_event *event)
 	
-	start = clock();
+	//start = clock();
 	
 	cl_int err4 = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, &local_size, 0, NULL, NULL); 
 
@@ -291,21 +291,28 @@ int main(void)
 	
 	//This command stops the program here until everything in the queue has been run
 	clFinish(queue);
-	end = clock();
+	//end = clock();
 	
 	// ***Step 13*** Check that the host was able to retrieve the output data from the output buffer
-	
+
+	string filename("kernelOutput.txt");
+	ofstream myfile;
+	myfile.open(filename, std::ios_base::app);
+
 	if(displayMatrices){
 		printf("\nOutput in the output_buffer \n");
+		myfile << "\nOutput in the output buffer \n";
 		for(int j=0; j<countA; j++) {
 			printf("%i \t " ,output[j]);
+			myfile << output[j] << " \t";
 			if(j%Size == (Size-1)){
+				myfile << "\n";
 				printf("\n");
 			}
 		}
 	}
 	
-	printf ("Run Time: %0.8f sec \n",((float) end - start)/CLOCKS_PER_SEC);
+	//printf ("Run Time: %0.8f sec \n",((float) end - start)/CLOCKS_PER_SEC);
 
 	//------------------------------------------------------------------------
 
@@ -318,5 +325,6 @@ int main(void)
 	clReleaseProgram(program);
 	clReleaseContext(context);
 
+	myfile.close();
 	return 0;
 }
