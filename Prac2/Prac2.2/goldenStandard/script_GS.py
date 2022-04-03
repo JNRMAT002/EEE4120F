@@ -18,9 +18,9 @@ def main (argv):
             cppFile = a + '.cpp'
             exeFile = a
             os.system("rm ./*.txt")
-            for i in range(10):
-                run(cppFile, exeFile)
-                time.sleep(1.1)
+            # for i in range(10):
+            run(cppFile, exeFile)
+            # time.sleep(1.1)
         else:
             sys.exit()
 
@@ -29,7 +29,13 @@ def run(cppFile, exeFile):
     if os.system("gcc " + " -o " + exeFile  + " " + cppFile + " -lstdc++") == 0:
         os.system("echo Running " + exeFile)
         os.system("echo -------------------")
+        # Run file once to warm up cache (not timed)
         os.system("./" + exeFile)
+        time.sleep(1)
+        # Run executable 10 times to get accurate timing data
+        for i in range(10):
+            os.system("./" + exeFile)
+            time.sleep(1.1)
     else:
         print("Compilation Failed - Check <filename> is correct")
 

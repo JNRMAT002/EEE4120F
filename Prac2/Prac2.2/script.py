@@ -18,9 +18,9 @@ def main (argv):
             cppFile = a + '.cpp'
             exeFile = a
             os.system("rm ./*.txt")
-            for i in range (10):
-                run(cppFile, exeFile)
-                time.sleep(1.1)
+            # for i in range (10):
+            run(cppFile, exeFile)
+                # time.sleep(1.1)
         else:
             sys.exit()
 

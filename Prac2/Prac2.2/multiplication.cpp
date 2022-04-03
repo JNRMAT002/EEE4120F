@@ -55,11 +55,11 @@ int main(void)
 {
 
 	clock_t start, end;  //Overhead timers
-	cl_ulong time_start, time_end; //Kernel timers
+	//cl_ulong time_start, time_end; //Kernel timers
 
 	//New code for prac 2.2
 	bool displayMatrices = true;
-	int Size = 20;
+	int Size = 500;
 	string Size_string = to_string(Size);
 	int countA = Size*Size;
 	int matrixA[countA];
@@ -70,7 +70,8 @@ int main(void)
 
 	int countB = Size*Size;
 	int matrixB[countB];
-	createRandomSquareMatrix(Size, matrixB,displayMatrices);
+	//createRandomSquareMatrix(Size, matrixB,displayMatrices);
+	createKnownSquareMatrix(Size, matrixB, displayMatrices);
 	cout<<"Number of elements in matrix 2: "<<countB<<"\n";
 	cout<<"Dimensions of matrix 2: "<<Size<<"x"<<Size<<"\n";
 	cout<<"Matrix 2 pointer: "<<matrixB<<"\n";
@@ -218,9 +219,8 @@ int main(void)
 	//						cl_int *errcode_ret)
 
 	cl_command_queue queue;
-	//cl_int prop = clSetCommandQueueProperty(queue, CL_QUEUE_PROFILING_ENABLE, CL_TRUE, NULL);
-	queue = clCreateCommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE, NULL);
-
+	//queue = clCreateCommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE, NULL);
+	queue = clCreateCommandQueue(context, device, 0, NULL);
 	//------------------------------------------------------------------------
 
 	// ***Step 9*** create data buffers for memory management between the host and the target device
@@ -284,32 +284,51 @@ int main(void)
 	
 	//start = clock();
 
-	cl_event event;
-	cl_int err4 = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, &local_size, 0, NULL, &event);
+	//cl_event event;
+	cl_int err4 = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, &local_size, 0, NULL, NULL); // &event);
 	printf("\nKernel check: %i \n",err4);
+
+	clock_t startTimer2, endTimer2;
+
+	
 
 	//------------------------------------------------------------------------
 
 	// ***Step 12*** Allows the host to read from the buffer object 
 	err = clEnqueueReadBuffer(queue, output_buffer, CL_TRUE, 0, sizeof(output), output, 0, NULL, NULL);
-	
-	clWaitForEvents(1, &event);
+
+	//clWaitForEvents(1, &event);
 	//This command stops the program here until everything in the queue has been run
 
+	clFinish(queue); // End of initial run to warm the cache (not timed)
+
+	// TIMING BLOCK STARTS HERE - Kernel is run 10 times, average of the run times is taken
+
+	int NUM_RUNS = 10;
+	startTimer2 = clock();
+	for (int i = 0; i < NUM_RUNS; i++)
+	{
+		clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, &local_size, 0, NULL, NULL);
+	}
 	clFinish(queue);
+	endTimer2 = clock();
+	float aveTime = (((float) endTimer2 - startTimer2)/CLOCKS_PER_SEC)/NUM_RUNS;
+
+	// TIMING BLOCK ENDS HERE
 
 	// END OF OVERHEAD ----------------------------------------------------------------------------------------------------
 	end = clock();
 	float overheadTime = ((float) end - start)/CLOCKS_PER_SEC;
+
 	// ***Step 13*** Check that the host was able to retrieve the output data from the output buffer
 
-	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
-	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
+	//clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
+	//clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
 
-	float duration_ns = time_end - time_start;
-	float duration = duration_ns/1000000000;
+	//float duration_ns = time_end - time_start;
+	//float duration = duration_ns/1000000000;
 
-	overheadTime = overheadTime - duration;
+	overheadTime = overheadTime - aveTime;
 
 	string filename("kernelOutput_" +  Size_string + "x" + Size_string + ".txt");
 	ofstream myfile;
@@ -328,8 +347,11 @@ int main(void)
 		}
 	}
 	
-	printf ("Run Time: %0.8f sec \n", duration);
-	myfile << "Run Time: " << duration << " sec \n";
+	//printf ("Run Time: %0.8f sec \n", duration);
+	//myfile << "Run Time: " << duration << " sec \n";
+	printf("Run Time of Kernel: %0.8f sec \n", aveTime);
+	printf("Overhead (Run Time excluding Kernel): %0.8f sec \n", overheadTime);
+	myfile << "Run Time: " << aveTime << " sec \n";
 	myfile << "Overhead Time: " << overheadTime << " sec \n";
 
 	//------------------------------------------------------------------------
