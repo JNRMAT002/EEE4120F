@@ -1,7 +1,7 @@
 script.py and script_GS.py (in the Golden Standard folder) can be run with the following commands respectively:
 
-	python script.py -i <filename>
-	python script_GS.py -i <filename>
+	python script.py -i multiplication
+	python script_GS.py -i multiplicationGoldenStandard
 
 The above commands will compile their respective .cpp programs and, in the case of the golden standard script, execute the executable generated 11 times (10 timed, 1 primer for the cache).
 The OpenCL matrix multiplication program runs the kernel 11 times (10 timed, 1 primer for the cache) within the code.
