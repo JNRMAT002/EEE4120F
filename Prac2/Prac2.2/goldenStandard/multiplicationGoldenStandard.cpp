@@ -60,7 +60,7 @@ int main(void){
 
 	//New code for prac 2.2
 	bool displayMatrices = true;
-	int Size = 500;
+	int Size = 100;
 	string Size_string = to_string(Size);
 	int countA = Size*Size;
 	int matrixA[countA];
